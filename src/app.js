@@ -1,52 +1,25 @@
 const express = require("express");
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
 const app = express();
 
-const routeHandler1 = (req, res, next) => {
-  console.log("Route Handler1")
-  next();
-}
+// Handle Auth Middleware for all GET, POST... requests
+app.use("/admin", adminAuth);
+// app.use("/user", userAuth);   // we can write this middleware in line no 20 as /user has only one route
 
-const routeHandler2 = (req, res, next) => {
-  console.log("Route Handler2")
-  next();
-}
-const routeHandler3 = (req, res, next) => {
-  console.log("Route Handler3")
-  next();
-}
-const routeHandler4 = (req, res, next) => {
-  console.log("Route Handler4")
-  res.send("Route handler 4")
-}
+app.get("/admin/getAllData", (req, res) => {
+  // Logic of fetching all data
+  res.send("All data sent");
+});
 
-app.get("/route", routeHandler1, [routeHandler2, routeHandler3], routeHandler4);
+app.get("/admin/deleteUser", (req, res) => {
+  // Logic of fetching all data
+  res.send("User deleted");
+});
 
-app.use(
-  "/user",
-  (req, res, next) => {
-    // Route Handler
-    console.log("Handling the route user 1!!");
-    next();
-    // res.send("Route handler 1");
-  },
-  (req, res, next) => {
-    console.log("Handling the route user 2!!");
-    // res.send("Route Handler 2");
-    next();
-  },
-  [
-  (req, res, next) => {
-    console.log("Handling the route user 3!!");
-    // res.send("Route Handler 3");
-    next();
-  },
-  (req, res, next) => {
-    console.log("Handling the route user 4!!");
-    res.send("Route Handler 4");
-    // next();
-  }],
-);
+app.get("/user", userAuth, (req, res) => {
+  res.send("User Data sent!!");
+});
 
 app.listen(7777, () => {
   console.log("Server started in port 7777");
