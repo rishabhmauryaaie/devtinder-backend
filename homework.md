@@ -18,6 +18,11 @@
 - Order of the routes matter a lot
 - Install Postman app and make a workspace/colletion > test api call
 
-- Explore routing and use of ?, +, (), * in the routes
-- Use of regex in routes /a/, /.*fly$/
+- Explore routing and use of ?, +, (), \* in the routes
+- Use of regex in routes /a/, /.\*fly$/
 - Reading the query params in the routes
+
+- Multiple Route Handlers - Play with the code
+- next()
+- next function and errors along with res.send()
+- app.use("/route", rH1, [rH2, rH3], rH4, rH5)
