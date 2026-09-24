@@ -42,4 +42,29 @@
 - Push some documents using api call
 - Error Handling using try catch
 
+- JS object vs JSON
+- Add express.json() middleware to our app
+- Make signup api dynamic to get the data from end user
+- User.findOne() with duplicate email ids, which object returned
+- API - get user by email
+- API - feed API - get feed - get all users from database
+- API - get user by ID
+- Create a delete user api 
+- Create update user api
+- Difference between patch and put
+- Difference between findByIdAndUpdate and findOneAndUpdate
+- What are options in findByIdAndUpdate api
+- Explore the Mongoose documentation for Model methods
+- Create api to update user by emailID
+
+- Explore schema type options from the documentation
+- Add a required, lowercase, uppercase, minLength, maxLength, min, max, trim
+- Add default
+- Create a custom validate function for gender
+- Improve the db schema - PUT all appropriate validations on each field in schema
+- Add timestamp to the user schema
+- Add API level validations on patch request and signup post api
+- DATA sanetizations: Add API validations for each field
+
+
 

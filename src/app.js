@@ -2,9 +2,145 @@ const express = require("express");
 const { adminAuth, userAuth } = require("./middlewares/auth");
 const User = require("./models/user");
 
-const dbConnect = require("./config/db");
+const dbConnect = require("./config/database");
 
 const app = express();
+
+// parse all json
+app.use(express.json());
+
+// register user
+app.post("/signup", async (req, res) => {
+  const user = new User(req.body);
+
+  try {
+    const savedUser = await user.save();
+
+    const { password, ...userData } = savedUser.toObject();
+
+    res.status(201).send({
+      message: "User created successfully!",
+      data: userData,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
+});
+
+// get user data by email id
+app.get("/user", async (req, res) => {
+  const emailId = req.body.emailId;
+
+  try {
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      res.status(404).send("User not found!");
+      return;
+    }
+    res.status(200).send(user);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// feed api
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find({});
+    if (users.length === 0) {
+      res.status(404).send("No user found!");
+      return;
+    }
+
+    res.status(200).send(users);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
+});
+
+// delete user
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  console.log(req.userId);
+  try {
+    const user = await User.findByIdAndDelete({ _id: userId });
+    res.send("User deleted successfully!");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// update user
+app.patch("/user/", async (req, res) => {
+  const data = req.body;
+  const userId = req.body.userId;
+
+  try {
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    const isUpdateAllowed = Object.keys(data).every((key) =>
+      ALLOWED_UPDATES.includes(key),
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed!");
+    }
+
+    if (data?.skills.length > 10) {
+      throw new Error("Skills can not be more than 10!");
+    }
+
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+      returnDocument: "after",
+    });
+    console.log(user);
+    res.status(200).send({
+      message: "User updated successfully!",
+      data: user,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// update user by email id
+app.patch("/user/:email", async (req, res) => {
+  const emailId = req.params.email;
+  const data = req.body;
+
+  try {
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    const isUpdateAllowed = Object.keys(data).every((key) =>
+      ALLOWED_UPDATES.includes(key),
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed!");
+    }
+
+    if (data?.skills.length > 10) {
+      throw new Error("Skills can not be more than 10!");
+    }
+
+    const user = await User.findOneAndUpdate({ emailId: emailId }, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    res.status(200).send({
+      message: "User updated successfully",
+      data: user,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong!");
+  }
+});
 
 dbConnect()
   .then(() => {
@@ -18,24 +154,3 @@ dbConnect()
       console.log("Something went wrong to connect db!");
     }
   });
-
-app.post("/signup", (req, res) => {
-  try {
-    const user = new User({
-      firstName: "Snehil",
-      lastName: "Maurya",
-      emailId: "snehil@gmail.com",
-      password: "Snehil@123",
-      age: 27,
-      gender: "Female",
-      id: "3475a345adjfalt0435"
-    });
-
-    user.save();
-
-    res.status(201).send("User created successfully!")
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Something went wrong")
-  }
-});
