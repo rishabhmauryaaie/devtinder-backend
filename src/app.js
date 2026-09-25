@@ -23,8 +23,11 @@ app.post("/signup", async (req, res) => {
       data: userData,
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Something went wrong");
+    const { name, message, errors } = err;
+
+    console.log(name, message, errors);
+
+    res.status(500).send(message);
   }
 });
 
@@ -56,8 +59,9 @@ app.get("/feed", async (req, res) => {
 
     res.status(200).send(users);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Something went wrong");
+    const { name, message, errors } = err;
+    console.log(name, message, errors);
+    res.status(500).send(message);
   }
 });
 
@@ -80,7 +84,14 @@ app.patch("/user/", async (req, res) => {
   const userId = req.body.userId;
 
   try {
-    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+    const ALLOWED_UPDATES = [
+      "userId",
+      "photoUrl",
+      "about",
+      "gender",
+      "age",
+      "skills",
+    ];
 
     const isUpdateAllowed = Object.keys(data).every((key) =>
       ALLOWED_UPDATES.includes(key),
@@ -103,8 +114,9 @@ app.patch("/user/", async (req, res) => {
       data: user,
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Something went wrong!");
+    const { name, message, errors } = err;
+    console.log(name, message, errors);
+    res.status(500).send(message);
   }
 });
 
@@ -137,8 +149,9 @@ app.patch("/user/:email", async (req, res) => {
       data: user,
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Something went wrong!");
+    const { name, message, errors } = err;
+    console.log(name, message, errors);
+    res.status(500).send(message);
   }
 });
 
