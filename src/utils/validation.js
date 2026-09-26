@@ -1,0 +1,51 @@
+const validator = require("validator");
+
+const validateSignUpData = (req) => {
+  const { firstName, lastName, emailId, password, age, gender } = req.body;
+
+  if (!firstName || !lastName) {
+    throw new Error("First name and last name required!");
+  } else if (firstName.length < 3 || lastName.length < 3) {
+    throw new Error(
+      "First name and last name length should be greater than 3!",
+    );
+  }
+
+  if (!emailId) {
+    throw new Error("Email id is required to register new user!");
+  }
+
+  if (!validator.isEmail(emailId)) {
+    throw new Error("Invalid Email id!");
+  }
+
+  if (!validator.isStrongPassword(password)) {
+    throw new Error("Password is not strong!");
+  }
+
+  if (!age) {
+    throw new Error("Age should be required");
+  } else if (age < 18) {
+    throw new Error("Age must be equal or above 18!");
+  }
+
+  if (!gender) {
+    throw new Error("Gender is required!");
+  } else if (!["male", "female", "other"].includes(gender.toLowerCase())) {
+    throw new Error("Invalid Gender!");
+  }
+};
+
+const validateLoginData = (req) => {
+  const { email, password } = req.body;
+
+  if (!validator.isEmail(email)) {
+    throw new Error("Invalid Credentials!");
+  }
+
+  if (!password) {
+    throw new Error("Invalid credentials!");
+  }
+};
+
+module.exports = { validateSignUpData, validateLoginData };

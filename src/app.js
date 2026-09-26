@@ -1,6 +1,8 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const { adminAuth, userAuth } = require("./middlewares/auth");
 const User = require("./models/user");
+const { validateSignUpData, validateLoginData } = require("./utils/validation");
 
 const dbConnect = require("./config/database");
 
@@ -9,14 +11,54 @@ const app = express();
 // parse all json
 app.use(express.json());
 
+// login user
+app.post("/login", async (req, res) => {
+  try {
+    // validate data
+    validateLoginData(req);
+
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ emailId: email }).select("+password");
+
+    if (!user) {
+      res.status(400).send("User not found!");
+    }
+
+    const result = await bcrypt.compare(password, user.password);
+    if (!result) {
+      res.status(400).send("Invalid Credentials");
+    }
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    res.status(200).send({ message: "Login successfull", data: userObj });
+  } catch (err) {
+    const { name, message, errors } = err;
+    console.log(name, message, errors);
+    res.status(500).send(message);
+  }
+});
+
 // register user
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-
   try {
+    // Validation of data
+    validateSignUpData(req);
+
+    const { password } = req.body;
+
+    // Encrypt the password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Creating a new instance of User model
+    const user = new User({ ...req.body, password: passwordHash });
+
     const savedUser = await user.save();
 
-    const { password, ...userData } = savedUser.toObject();
+    // const { password, ...userData } = savedUser.toObject();
+    const { ...userData } = savedUser.toObject();
 
     res.status(201).send({
       message: "User created successfully!",
