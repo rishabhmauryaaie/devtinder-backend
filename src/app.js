@@ -1,5 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 const { adminAuth, userAuth } = require("./middlewares/auth");
 const User = require("./models/user");
 const { validateSignUpData, validateLoginData } = require("./utils/validation");
@@ -10,6 +12,7 @@ const app = express();
 
 // parse all json
 app.use(express.json());
+app.use(cookieParser());
 
 // login user
 app.post("/login", async (req, res) => {
@@ -33,6 +36,9 @@ app.post("/login", async (req, res) => {
     const userObj = user.toObject();
     delete userObj.password;
 
+    const token = jwt.sign({ _id: user._id }, "Rishabh@123");
+
+    res.cookie("token", token);
     res.status(200).send({ message: "Login successfull", data: userObj });
   } catch (err) {
     const { name, message, errors } = err;
@@ -69,6 +75,33 @@ app.post("/signup", async (req, res) => {
 
     console.log(name, message, errors);
 
+    res.status(500).send(message);
+  }
+});
+
+// user profile
+app.get("/profile", async (req, res) => {
+  try {
+    const { token } = req.cookies;
+
+    if (!token) {
+      throw new Error("Invalid token!");
+    }
+
+    // verify token
+    const decodeToken = jwt.verify(token, "Rishabh@123");
+
+    const user = await User.findById(decodeToken._id);
+
+    if (!user) {
+      res.status(404).send("User not found!");
+      return;
+    }
+
+    res.status(200).send(user);
+  } catch (err) {
+    const { name, message, errors } = err;
+    console.log(name, message, errors);
     res.status(500).send(message);
   }
 });
