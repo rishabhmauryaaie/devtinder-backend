@@ -48,4 +48,47 @@ const validateLoginData = (req) => {
   }
 };
 
-module.exports = { validateSignUpData, validateLoginData };
+const validateEditProfileData = (req) => {
+  const data = req.body;
+  const ALLOWED_DATA = [
+    "firstName",
+    "lastName",
+    "age",
+    "gender",
+    "about",
+    "skills",
+  ];
+
+  let result = false;
+
+  for (let d in data) {
+    result = ALLOWED_DATA.includes(d);
+
+    if (!result) {
+      throw new Error("Invalid Data!");
+    }
+  }
+};
+
+const validatePasswordProfileData = (req) => {
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword) {
+    throw new Error("Old password must required to update password!");
+  }
+
+  if (!newPassword) {
+    throw new Error("New Password must required!");
+  }
+
+  if (!validator.isStrongPassword(newPassword)) {
+    throw new Error("Password is not strong!");
+  }
+};
+
+module.exports = {
+  validateSignUpData,
+  validateLoginData,
+  validateEditProfileData,
+  validatePasswordProfileData,
+};
