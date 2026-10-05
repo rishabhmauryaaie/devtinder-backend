@@ -86,9 +86,28 @@ const validatePasswordProfileData = (req) => {
   }
 };
 
+const validateConnectionRequestData = (req) => {
+  const {toUserId, status} = req.params;
+
+  console.log(toUserId, status)
+
+  if(!toUserId) {
+    throw new Error("User id required to make connection!")
+  }
+
+  if(!status) {
+    throw new Error("Status must be required!")
+  } 
+
+  if(!["interested", "rejected"].includes(status)) {
+    throw new Error("Invalid status!")
+  }
+}
+
 module.exports = {
   validateSignUpData,
   validateLoginData,
   validateEditProfileData,
   validatePasswordProfileData,
+  validateConnectionRequestData
 };

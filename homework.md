@@ -95,6 +95,16 @@
 - Create authRouter, profileRouter, requestRouter
 - Import these routers in app.js
 
+- Create Connection Request Schema
+- Send Connection Request API
+- Proper validation of Data
+- Think about all corner cases
+- $or query $and query in mongoose and read more about logical queries
+- Read about schema.pre('save', async function() {}) function
+- Read this article about compound indexes
+- Read more about indexes in MongoDB
+- Why do we need index in DB?
+- What is the advantages and disadvantage of creating index?
 
 
 
