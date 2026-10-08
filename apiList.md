@@ -21,6 +21,6 @@
 
 ## userRouter
 
+- GET /user/requests/received
 - GET /user/connections
-- GET /requests/recieved
-- GET /feed - Gets us the profiles of other users of the plateform
+- GET /user/feed - Gets us the profiles of other users of the plateform

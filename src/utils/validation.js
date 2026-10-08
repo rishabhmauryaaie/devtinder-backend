@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const validator = require("validator");
 
 const validateSignUpData = (req) => {
@@ -87,27 +88,48 @@ const validatePasswordProfileData = (req) => {
 };
 
 const validateConnectionRequestData = (req) => {
-  const {toUserId, status} = req.params;
+  const { toUserId, status } = req.params;
 
-  console.log(toUserId, status)
+  console.log(toUserId, status);
 
-  if(!toUserId) {
-    throw new Error("User id required to make connection!")
+  if (!toUserId) {
+    throw new Error("User id required to make connection!");
   }
 
-  if(!status) {
-    throw new Error("Status must be required!")
-  } 
-
-  if(!["interested", "rejected"].includes(status)) {
-    throw new Error("Invalid status!")
+  if (!status) {
+    throw new Error("Status must be required!");
   }
-}
+
+  if (!["interested", "ignored"].includes(status)) {
+    throw new Error("Invalid status!");
+  }
+};
+
+const validateReviewRequestData = (req) => {
+  const { status, requestId } = req.params;
+
+  if (!status) {
+    throw new Error("Status is required!");
+  }
+
+  if (!["accepted", "rejected"].includes(status)) {
+    throw new Error("Invalid status!");
+  }
+
+  if (!requestId) {
+    throw new Error("Request id must be required!");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(requestId)) {
+    throw new Error("Invalid request Id!");
+  }
+};
 
 module.exports = {
   validateSignUpData,
   validateLoginData,
   validateEditProfileData,
   validatePasswordProfileData,
-  validateConnectionRequestData
+  validateConnectionRequestData,
+  validateReviewRequestData,
 };
